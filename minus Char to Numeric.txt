@@ -1,0 +1,70 @@
+The 'atoi' and 'atof' C functions handle conversion from numbers 
+containing decimal points and signs. If the number may contain a decimal point, 
+use 'atof' (it doesn't allow comma - you'd have to xlate ',':'.') 
+Be sure to use half-adjust with atof because the result is floating-point. Here's an example.
+
+h bnddir('QC2LE')
+D atoi            pr            10i 0 extproc('atoi')
+D   num                           *   options(*string) value
+D atof            pr             8f   extproc('atof')
+D   num                           *   options(*string) value
+D i               s             10i 0
+D p               s             13p 7
+C                   movel     '-100  '      num               6
+C                   eval      i = atoi(%trim(num))
+ * > EVAL i
+ *   I = -100
+C                   eval(h)   p = atof(%trim(num))
+ * > EVAL i
+ *   P = -000100.0000000
+C                   movel     '-5.67 '      num               6
+C                   eval(h)   p = atof(%trim(num))
+ * > EVAL p
+ *   P = -000005.6700000
+C                   return
+
+Barbara Morris
+IBM Toronto Lab
+RPG Compiler Development 
+
+
+
+Using ATOI
+decimal-value = atoi( 'numeric-value' )
+The atoi() function accepts a character value as input and returns an integer value. 
+The input character string should contain a whole number (integer) value. But regardless, 
+the returned value is an integer only. Any decimal positions are truncated by the function. 
+The difference between this function and atoll() is that this function returns an Int4 (10i0) 
+value whereas atoll returns an Int8 (20i0) value. So with atoi() you get up to 10 digits of 
+accuracy (to the left of the decimal point) and with atoll() you get 20 digits of accuracy.
+
+.....DName+++++++++++EUDS.......Length+TDc.Functions+++++++++++++
+0001 D atoi            PR            10I 0 ExtProc('atoi')
+0002 D  charValue                      *   VALUE Options(*STRING)
+Using ATOLL
+decimal-value = atoll( 'numeric-value' )
+The atol() function accepts a character value as input and returns an integer value. 
+The input character string should contain a whole number (integer) value. But regardless, 
+the returned value is an integer only. Any decimal positions are truncated by the function. 
+The difference between this function and atoi() is that this function returns an Int8 (20i0) 
+value whereas atoi returns an Int4 (10i0) value. So with atoll() you get up to 20 digits of accuracy 
+(to the left of the decimal point) and with atoi() you get 10 digits of accuracy.
+
+.....DName+++++++++++EUDS.......Length+TDc.Functions+++++++++++++
+0003 D atoll           PR            20I 0 ExtProc('atoll')
+0004 D  charValue                      *   VALUE Options(*STRING)
+ 
+Using ATOF
+floating-point-value = atof( 'numeric-value' )
+The atof() function accepts a character value as input and returns an numeric value. 
+The numeric value in the input character string may contain a decimal point as a floating point value is returned. 
+The return value may be a PACKED, ZONED (signed) or FLOAT numeric field.
+
+The value returned by atof() is less accurate than that of CharToNum(), 
+but is good for quick conversions with one or two decimal positions. 
+
+.....DName+++++++++++EUDS.......Length+TDc.Functions+++++++++++++
+0005 D atof            PR             8F   ExtProc('atof')
+0006 D  charValue                      *   VALUE Options(*STRING)
+  
+

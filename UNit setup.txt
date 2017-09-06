@@ -1,0 +1,21 @@
+dspdtaara kapphs                         
+kmenu1                                   
+dspdtaara kapphs                         
+CHGDTAARA DTAARA(KAPPHS) VALUE('C50')    
+dspdtaara kapphs                         
+dspdtaara kqistat                        
+CHGDTAARA DTAARA(KQISTAT) VALUE('YYNN')  
+dspdtaara kqistat                        
+dspdtaara kkwmode                        
+Data area KKWMODE in *LIBL not found.    
+dspdtaara kimode                         
+Data area KIMODE in *LIBL not found.     
+dspdtaara kqimode                            
+chgdatara kqimode                            
+Command CHGDATARA in library *LIBL not found.
+Error found on CHGDATARA command.            
+CHGDTAARA DTAARA(KQIMODE) VALUE('DIS')       
+
+Delete KFILMAR/CHPF
+                                             
+EQCRTLIBL MNEM(MAR)

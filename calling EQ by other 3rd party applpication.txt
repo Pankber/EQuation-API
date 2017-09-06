@@ -1,0 +1,7 @@
+sample at MRBIUC03
+
+this CLLE to call & setup as per unit request at Equation
+ CALL       PGM(KAPBASELIB/KAPUNLIBL) PARM('MAR' '*DFT') 
+ CALL       PGM(UTM83C) PARM(' ')                        
+ CALL       PGM(RCTINC)                                  
+

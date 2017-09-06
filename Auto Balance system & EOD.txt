@@ -1,0 +1,42 @@
+auto balancing
+1. KMENU0
+2. option 5 - Maintain Major Processing Characteristics
+3. CM - ASB - Automatically balance system
+4. Y
+Setup calendar holiday (D2 08AAA LOAD Holiday) check repost 32C option ICT-C .
+
+SetOff Commitment control
+1. KMENU1
+2. Option 3
+3. System Option (CST) 0204, 0205, 0206, 0207, 0317, 0345, 0040  = NO
+4. option 5
+5. system option TII=1
+
+Remark fot CHPF
+REPLICATIN	= **PLICATIN
+MAR01		= MRDTAMAR to MRDTAECC
+MAR02		= MRPGMMAR to MRPGMECC
+K414A		= **K414A
+K387		= **K387	
+
+
+UPDATE CHPF        
+set CHENM='**PLICATIN'
+where CHENM='REPLICATIN'
+
+UPDATE CHPF        
+set CHENM='MAR01'
+where CHENL='MTDTAECC'
+
+UPDATE CHPF        
+set CHENM='MAR02'
+where CHENL='MTPGMECC'
+
+UPDATE CHPF        
+set CHENM='**K414A'
+where CHENM='K414A'
+
+UPDATE CHPF       
+set CHENM='**K387'
+where CHENM='K387'
+

@@ -1,0 +1,217 @@
+      *Z This program has been tokenised on 060599
+      /TITLE Skeleton service routine
+      *     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *     +                                                       +
+      *     +  All rights reserved. No part of the program and data +
+      *     +  contained herein may be transmitted, reproduced or   +
+      *     +  stored in any retrieval system of any nature in any  +
+      *     +  form or by any means whether digital, electronic,    +
+      *     +  mechanical or otherwise without the prior written    +
+      *     +  permission of Midas-Kapiti International Limited to  +
+      *     +  which application for such permission should be      +
+      *     +  addressed.                                           +
+      *     +                                                       +
+      *     +  Kapiti is a registered trade mark of Midas-Kapiti    +
+      *     +  International Limited.                               +
+      *     +                                                       +
+      *     +  Copyright Misys PLC 1999.                            +
+      *     +                                                       +
+      *     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      *-------------------------------------------------------------------
+      *              System Name - EQUATION
+      *              Module Name - User Exit
+      *
+      *             Program Name - J40MVX
+      *            Program Title - Maintain/Delete Account Hold
+      *
+      *L                   Level - E8A
+      *
+      *            Creation Date - Aug 2004
+      *               Created by - Merian V. Malimban
+      *-------------------------------------------------------------------
+      *P Purpose
+      *P ~~~~~~~
+      *P To provide a simple user exit program
+      *P
+      *-------------------------------------------------------------------
+      *H Change Control
+      *H ~~~~~~~~~~~~~~
+      *H Project     Programmer    Date         Level
+      *H ~~~~~~~     ~~~~~~~~~~    ~~~~         ~~~~~
+      *H
+      *-------------------------------------------------------------------------
+      *A Data Areas Used
+      *A ~~~~~~~~~~~~~~~
+      *A Int Name   Ext Name   Description
+      *A ~~~~~~~~   ~~~~~~~~   ~~~~~~~~~~~
+      *A DSSYSE     DASYSCTL   Global system data area
+      *-------------------------------------------------------------------------
+      *F Files Used
+      *F ~~~~~~~~~~
+      *F Name       Description
+      *F ~~~~       ~~~~~~~~~~~
+      *-------------------------------------------------------------------------
+      *U Entry Parameter List
+      *U ~~~~~~~~~~~~~~~~~~~~
+      *U
+      *-------------------------------------------------------------------------
+      *T Program Structure Tree
+      *T ~~~~~~~~~~~~~~~~~~~~~~
+      *-------------------------------------------------------------------------
+      *Y Copysource Used
+      *Y ~~~~~~~~~~~~~~~
+      *Y File      Member     Description
+      *Y ~~~~      ~~~~~~     ~~~~~~~~~~~
+      *Y EQCPYSRC  HSPEC      Program header specification                   E2A
+      *Y EQCPYSRC  DSSYSE     Data Structure of DASYSCTL data area      3031 E4L
+      *Y EQCPYSRC  DPGMDS     Data structure for program status              E3A
+      *Y EQCPYSRC  DMSGDS_A   DS for dump message                            E3B
+      *Y EQCPYSRC  STDCNST    Standard program constants                     E3A
+      *Y EQCPYSRC  PSSR_A     Program error control subroutine (on-line)     E3A
+      *-------------------------------------------------------------------------
+      /EJECT
+      /COPY EQCPYLESRC,HSPEC                       Program header specificat
+      *
+      *-------------------------------------------------------------------
+      *  FILES
+      *-------------------------------------------------------------------
+      *
+      *-------------------------------------------------------------------
+      *  ARRAYS
+      *-------------------------------------------------------------------
+      *
+      *  Compile time arrays
+      *
+      *
+      *  Execution time arrays
+      *
+      /EJECT
+      *
+      *-------------------------------------------------------------------
+      *  DATA AREAS
+      *-------------------------------------------------------------------
+      *
+      /COPY EQCPYLESRC,DSSYSE                      Data Structure of DASYSCT
+      *
+      *-------------------------------------------------------------------
+      *  DATA STRUCTURES
+      *-------------------------------------------------------------------
+      *
+      /COPY EQCPYLESRC,DPGMDS                      Data structure for progra
+      /COPY EQCPYLESRC,DMSGDS_A                    DS for dump message
+      /COPY EQCPYLESRC,DSEXIT_C                    Data Structure for user e
+      /COPY EQCPYLESRC,DSEXMS                      Data Structure for user e
+      *
+     D DSAFT           DS          9999
+     D  ZLACO                 89     91
+     D  ZLHRC                 92     94
+      *
+      *-------------------------------------------------------------------
+      *  PRE-INITIALISED DATA STRUCTURES
+      *-------------------------------------------------------------------
+      *
+     D MSGID           DS            39
+     D  MSGID#                 1      7
+     D  PARM1                  8     17
+     D  PARM2                 18     27
+     D  PARM3                 28     37
+     D  INDCTR                38     39
+      *
+      *-------------------------------------------------------------------
+      *  NAMED CONSTANTS
+      *-------------------------------------------------------------------
+      *
+      /COPY EQCPYLESRC,STDCNST                     Standard program constant
+      *
+      *-------------------------------------------------------------------
+      *  PARAMETER AND KEY LISTS
+      *-------------------------------------------------------------------
+      *
+      *  Parameter lists
+      *
+     C     *ENTRY        PLIST
+     C                   PARM                    @XFCT             1
+     C                   PARM                    @XPRMT            1
+     C                   PARM                    @XSCRN            1 0
+     C                   PARM                    @XMODE            1
+     C                   PARM                    DSEXIT
+      *
+     C     PUTR19        PLIST
+     C                   PARM      'J40MV'       QNAME             5
+     C                   PARM      MSGID         DQDATA           39
+     C                   PARM                    ERCOD             2
+      *
+      *  Key lists
+      *
+      *-------------------------------------------------------------------
+      /EJECT
+      *===================================================================
+      *  MAINLINE
+      *===================================================================
+      *
+      *  Initialise key fields
+     C     @XFCT         IFNE      'I'
+     C                   CLEAR                   DSAFT
+     C                   MOVEL     DSEXIT        DSAFT
+      *
+     C                   SELECT
+     C     @XMODE        WHENEQ    'D'
+      *
+     C     @XSCRN        IFEQ      1
+     C                   MOVEL     DSAFT         DSEXIT
+     C                   ENDIF
+      *
+     C     @XSCRN        IFEQ      2
+     C                   MOVEL     DSAFT         DSEXIT
+     C                   ENDIF
+      *
+      * Validation Mode
+      *
+     C     @XMODE        WHENEQ    'V'
+      *
+     C     @XSCRN        IFEQ      2
+     C                   if        ZLACO <> ' '
+     C                             and ZLHRC <> ' '
+     C                   MOVE      'KSM0569'     MSGID#
+     C                   CALL      'UTR19C'      PUTR19
+     C                   endif
+     C                   MOVEL     DSAFT         DSEXIT
+     C                   END
+      *
+     C                   ENDSL
+      *
+     C                   END
+      *
+      *  Return to caller
+     C                   RETURN
+      *===================================================================
+      /EJECT
+      *===================================================================
+      *  SUBROUTINES
+      *===================================================================
+      /EJECT
+      *-------------------------------------------------------------------
+     C     *INZSR        BEGSR
+      *-------------------------------------------------------------------
+      *
+      *S Program initialisation
+      *
+      *-------------------------------------------------------------------
+      *
+      * Retrieve information from system control data area
+     C     *DTAARA       DEFINE    DASYSCTL      DSSYSE
+     C                   IN        DSSYSE
+      *
+     C                   MOVE      *BLANKS       MSGID
+      *
+     C                   ENDSR
+      *-------------------------------------------------------------------
+      /EJECT
+      /COPY EQCPYLESRC,PSSR_A                      Program error control sub
+      /EJECT
+      *
+      *-------------------------------------------------------------------
+      * COMPILE TIME ARRAY DATA
+      *-------------------------------------------------------------------
+      *
+

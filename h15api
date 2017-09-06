@@ -1,0 +1,188 @@
+     H
+      *
+      * Printer File
+     FEQRPT     O    F  132        PRINTER
+      *
+     F*ZH151J   IF   E           K DISK
+      *
+      * Journal file GZH151 Data structure
+     D DSGZH15       E DS                  EXTNAME(GZH151) INZ
+      *
+      /COPY EQCPYLESRC,DSJOBE
+     ‚*                                                                                       DSJOBE
+      /COPY EQCPYLESRC,DSSYSE
+     ‚*                                                                                       DSSYSE
+      /COPY EQCPYLESRC,DSRETF
+     ‚*                                                                   DSSC06              DSRETF
+     ‚*  General purpose parameter list data structure.                   DSSC06              DSRETF
+     D DSAIM           DS                                                       DSAIM         DSAIM_
+     D  AIM                    1   9999    DIM(9999)                            DSAIM         DSAIM_
+      *
+     D AOW             S             37    DIM(20)
+      *
+      * Error message data structure
+     D DSEPMS          DS
+     D  @ERM                   1      7
+     D  @PM1                   8     17
+     D  @PM2                  18     27
+     D  @PM3                  28     37
+     D  @PMALL                 8     37
+      *
+      *
+      * Plist fpr calling the API program
+     C     PLH561        PLIST
+     C                   PARM                    @RPGM            10
+     C                   PARM                    @BRNM             4
+     C                   PARM                    @USID             4
+     C                   PARM                    @WSID             4
+     C                   PARM                    @JTT              1
+     C                   PARM                    DSAIM
+     C                   PARM                    @RREC             1
+     C                   PARM                    @RMES7           37
+     C                   PARM                    AOW
+     C                   PARM                    @ETK              4
+     C                   PARM                    @ETN              7 0
+     C                   PARM                    @AEXT             1
+     C                   PARM                    @AREC             1
+      /EJECT
+      * --------------------------------------------------------------------------------------------
+      * Main Program
+      *
+      * --------------------------------------------------------------------------------------------
+      * Populate the journal file data structure
+     C                   EXSR      A000
+     C                   EVAL      *INLR = *on
+     C                   RETURN
+      *
+      /EJECT
+      * --------------------------------------------------------------------------------------------
+      *
+     C     A000          BEGSR
+      *
+      * -------------------------------------------------------------------------------------------
+      *                                                                                       Z130
+      * Populate the DSGZH15 data structure
+     C                   CLEAR                   DSGZH15
+      *
+     C*    *LOVAL        SETLL     GZH15PR
+     C*                  READ      GZH15PR                                98
+     C*                  DOW       *IN98 = *OFF
+     C*
+     C                   eval      gzwsid = $WSID
+     C                   eval      gzimg  = 'A'
+     C                   eval      gzab   = '0543'
+     C                   eval      gzan   = '012008'
+     C                   eval      gzas   = '001'
+     C                   eval      GZBRNM = $DBBN
+     C                   eval      GZPBR  = $USID
+     C                   eval      GZPSQ  = 0
+     C                   eval      GZVFR  = $PDATE
+     C                   eval      GZBRND = $DBBN
+     C                   eval      GZDRF  = 'ONLINE API'
+     C                   eval      GZAMA  = 100000
+     C                   eval      GZAPP  = ' '
+     C                   eval      GZTCD  = '010'
+     C                   eval      GZCCY  = 'GBP'
+     C                   eval      GZSRC  = ' '
+     C                   eval      GZUC1  = ' '
+     C                   eval      GZUC2  = ' '
+     C                   eval      GZNPE  = 1
+     C                   eval      GZNR1  = 'Exercise 2'
+     C                   eval      GZNR2  = 'Good Luck'
+     C                   eval      GZNR3  = ' '
+     C                   eval      GZNR4  = ' '
+     C                   eval      GZRFR  = 'N'
+     C                   eval      GZAUT  = ' '
+     C                   eval      GZSSI  = ' '
+     C                   eval      GZFRV  = ' '
+     C                   eval      GZTTP  = ' '
+     C*                  eval      GZHSR  = ' '
+     C*                  eval      GZHAM  = ' '
+     C                   eval      GZAUT  = ' '
+     C                   eval      GZCED  = ' '
+     C                   eval      GZCHQ  = ' '
+     C*                  eval      GZDRFN = 0
+     C                   eval      GZINW  = ' '
+     C                   eval      GZRAU  = ' '
+     C                   eval      GZEMN1 = ' '
+     C                   eval      GZRAU1 = ' '
+     C                   eval      GZEMN2 = ' '
+     C                   eval      GZRAU2 = ' '
+     C                   eval      GZEMN3 = ' '
+     C                   eval      GZRAU3 = ' '
+     C                   eval      GZEMN4 = ' '
+     C                   eval      GZRAU4 = ' '
+     C                   eval      GZMCH  = ' '
+     C                   eval      GZTCCY = 'GBP'
+     C                   eval      GZTAMA = 100000
+     C                   eval      GZTCED = ' '
+     C                   eval      GZHCCY = ' '
+     C                   eval      GZEAN  = ' '
+     C                   eval      GZGDP  = ' '
+     C
+      * Call the API program
+     C                   EXSR      ZH561
+      *
+     C*                  READ      GZH15PR                                98
+     C*                  ENDDO
+      *
+     C     ZMVTODSXT     ENDSR
+      /EJECT
+      * --------------------------------------------------------------------------------------------
+      *
+     C     ZH561         BEGSR
+      *
+      * -------------------------------------------------------------------------------------------
+      *                                                                                       Z130
+      * Call the API program
+      * Where H15MRR is the API program and XXX is the option ID.
+      *
+     C                   MOVEL     'H15ARRASI'   @RPGM
+     C                   MOVEL     $DBBN         @BRNM
+     C                   MOVEL     $USID         @USID
+     C                   MOVEL     $WSID         @WSID
+     C                   MOVEL     'A'           @JTT
+      *
+     C                   MOVEL     DSGZH15       DSAIM
+     C                   call      'H56H1R'      PLH561
+      *
+      * In case of failed transaction, report it.
+     C                   If        @RREC = 'F'
+     C                   MOVEL     @RMES7        DSEPMS
+     C                   EXCEPT    PSTHDR
+     C                   Endif
+      *
+     C     ZH561XT       ENDSR
+      /EJECT
+      * --------------------------------------------------------------------------------------------
+      * Progaram Initialisation
+      *
+     C     *INZSR        BEGSR                                                                *INZSR
+      *
+      * --------------------------------------------------------------------------------------------
+      *
+      *  Retrieve information from system control data area                                   *INZSR
+     C     *DTAARA       DEFINE    DAJOBCTLE     DSJOBE                                       *INZSR
+     C                   IN        DSJOBE                                                     *INZSR
+      *                                                                                       *INZSR
+     C     *DTAARA       DEFINE    DASYSCTL      DSSYSE                                       *INZSR
+     C                   IN        DSSYSE                                                     *INZSR
+      *
+     C                   ENDSR
+      /EJECT
+      *----------------------------------------------------------------------------------------
+     OEQRPT     E            PSTHDR         2 02                                              PR13SU
+      *                                                                                       PR13SU
+     O                                          124 'FAILED TRANSACTION REPORT'               PR13SU
+     O          E            PSTHDR      1                                                    PR13SU
+     O                                           18 'Account Number :'
+     O                       GZAB                25                                           PR13SU
+     O                                           26 '-'                                       PR13SU
+     O                       GZAN                32                                           PR13SU
+     O                                           33 '-'                                       PR13SU
+     O                       GZAS                36                                           PR13SU
+     O                                           53 'Error Message :'
+     O                       DSEPMS              90
+      *                                                                                       PR13SU
+
+

@@ -1,0 +1,205 @@
+C/EXEC SQL
+C+  DELETE FROM SRBFFI
+C+  WHERE FFPRDC = :OLDPROD1 OR
+C+        FFPRDC = :OLDPROD2 OR
+C+        FFPRDC = :OLDPROD3
+C/END-EXEC
+=====================================================
+
+C/EXEC SQL
+C+ UPDATE XAOAUD
+C+  SET XADFLG = 'Y'
+C+  WHERE XADFLG = ' '
+C/END-EXEC
+=====================================================
+
+C/EXEC SQL                                                        
+C+ SELECT SUM(OLOQTY)                                             
+C+    INTO :XXCSOQ                                                
+C+    FROM SROORSPL                                               
+C+    WHERE OLALNO <> 0 AND OLORDS < 30 AND OLDELT < :X9DATE AND  
+C+          OLPRDC = :X1PRDC AND OLSROM = :X1SROM                 
+C/END-EXEC 
+=====================================================
+
+C/EXEC SQL                                          
+C+ DECLARE A CURSOR FOR                             
+C+  SELECT *                                        
+C+  FROM SR2ISD                                     
+C+  WHERE IDIDAT BETWEEN :@FDATE AND :@TDATE AND    
+C+        IDSROM       = :XXWHSE AND                
+C+        IDTYPP       = :@SALTYP                   
+C+   ORDER BY IDPRDC                                
+C/END-EXEC  
+=====================================================
+
+C/EXEC SQL                                        
+C+ DECLARE A CURSOR FOR                           
+C+  SELECT *                                      
+C+  FROM SR2ISD                                   
+C+  WHERE IDCUNO       = :@CUSNO AND              
+C+        IDIDAT BETWEEN :@FDATE AND :@TDATE AND  
+C+        IDPGRP BETWEEN :@PRDG1 AND :@PRDG2 AND  
+C+        IDSALE BETWEEN :@FSALE AND :@TSALE AND  
+C+        IDPGRP <>      :@EXGPF1 AND             
+C+        IDPGRP <>      :@EXGPF2 AND             
+C+        IDFOCC <> 'Y'                           
+C+   ORDER BY IDCUNO, IDIDAT, IDINVN              
+C/END-EXEC 
+
+
+Multiple Row FETCH
+Based on host structure array
+RPG - Multiple Occurence Data Structure
+COBOL - Occurs clause on declaration of the group item
+Clause on FETCH
+FOR n ROWS (n = number of rows to be returned)
+Specifies the number of rows to be retrieved to fill the array structure.
+
+D EMP 	DS 		Occurs(10)
+D NBR 		 5 0
+D NAME 		25
+D JOB            1
+C*
+C       Z-ADD     5    JOB
+
+C/EXEC SQL
+C+  FETCH Next
+C+  FROM CustomerCursor
+C+  FOR 10 ROWS 
+C+  INTO EMP
+C/End-EXEC
+
+C 	Eval 	ErrCond = SQLErrD(5)
+C*
+
+=====================================================
+SQLRPGLE  - Get the month name from SQL 
+  Select CYYMMDD,
+        Case Substr( Digits( CYYMMDD ), 4, 2 )
+          When '01' Then 'JAN'
+          When '02' Then 'FEB'
+          When '03' Then 'MAR'
+          When '04' Then 'APR'
+          When '05' Then 'MAY'
+          When '06' Then 'JUN'
+          When '07' Then 'JUL'
+          When '08' Then 'AUG'
+          When '09' Then 'SEP'
+          When '10' Then 'OCT'
+          When '11' Then 'NOV'
+          When '12' Then 'DEC'
+          Else 'Uh Oh..Bad Data!'
+        End
+   From FileName 
+Select CYYMMDD,
+       Substr( '   JANFEBMARAPRJUNJULAUGSEPOCTNOVDEC' ),
+       (Integer( Substr( Digits( CYYMMDD ), 4, 2 ) ) * 3 + 1 ), 3 ) 
+From FileName 
+
+
+=====================================================
+SQLRPGLE  - SQL DELETE EXISTS 
+You should use the EXISTS command word, as follows:
+C/EXEC SQL 
+C+ DELETE 
+C+   FROM FILEA A 
+C+  WHERE EXISTS (SELECT B.BDATE, B.BSTORE# 
+C+                  FROM FILEBB B 
+C+                 WHERE A.ADATE   = B.BDATE 
+C+                   AND A.ASTORE# = B.BSTORE#) 
+C/END-EXEC
+For performance considerations, please make sure that FILEA has an index 
+defined as ADATE, ASTORE# and FILEBB has an index defined as BDATE, BSTORE#.
+
+=====================================================
+SQLRPGLE  - Listing fields by table using SYSCOLUMNS 
+SELECT SUBSTR(COLUMN_NAME,1,10) AS FIELD_NAME,             
+       SUBSTR(DATA_TYPE,1,6) AS TYPE, LENGTH,              
+       DIGITS(NUMERIC_SCALE) AS DEC,                       
+       SUBSTR(COLUMN_TEXT,1,20) AS DESCRIPTION,            
+       IS_NULLABLE AS NULL,                                
+       SUBSTR(TABLE_NAME,1,10) AS TABLE_NAME,              
+       SUBSTR(TABLE_SCHEMA,1,10) AS TABLE_SCHEMA,          
+       SUBSTR(SYSTEM_TABLE_NAME,1,10) AS SYSTAB_NAME,      
+       SUBSTR(SYSTEM_TABLE_SCHEMA,1,10) AS SYSTAB_SCHEMA   
+FROM SYSCOLUMNS                                            
+WHERE COLUMN_NAME LIKE \'%PRDC%\'         
+Note: The substr is needed only if you want to fit most info in one screen.     
+
+
+=====================================================
+SQLRPGLE  - Using Procedures to Embed SQL in Free Format RPGIV 
+H DftActGrp(*NO)
+DPgmRefRecs     E DS                  ExtName(PGMREF)
+D#OpenSQL         PR
+D#ReadSQL         PR
+D#CloseSQL        PR
+
+DRecCount         S              3S 0 Inz(*Zeros)
+
+ /Free
+  CallP #OpenSQL();
+  CallP #ReadSQL();
+  DoW SQLCod = 0;
+      RecCount += 1;
+      CallP #ReadSQL();
+      EndDo;
+      CallP #CloseSQL();
+
+  *INLR = *On;
+  Return;
+
+ /End-Free
+
+*----------------------------------------------------------------
+P#OpenSQL         B                   Export
+D#OpenSQL         PI
+
+C/Exec SQL
+C+ Declare PGMRefCsr Cursor for
+C+  Select * from PGMREF
+C/End-Exec
+
+C/Exec SQL
+C+ Open PgmRefCsr
+C/End-Exec
+
+P#OpenSQL         E
+*----------------------------------------------------------------
+P#ReadSQL         B                   Export
+D#ReadSQL         PI
+
+C/Exec SQL
+C+  Fetch PgmRefCsr into :PgmRefRecs
+C/End-Exec
+
+P#ReadSQL         E
+*----------------------------------------------------------------
+P#CloseSQL        B                   Export
+D#CloseSQL        PI
+
+C/Exec SQL
+C+ Close PgmRefCsr
+C/End-Exec
+
+P#CloseSQL        E 
+=====================================================
+SQLRPGLE  - Remove duplicate records 
+Remove duplicate records in FILE1 that              
+ *    also exist in FILE2  
+
+C/exec sql                                              
+C+   Delete From FILE1                                  
+C+      Where Exists (select * from FILE2 where      
+C+        FILE1.field1 = FILE2.field1  and            
+C+        FILE1.field2 = FILE2.field2  and                      
+C+        FILE1.field3 = FILE2.field3  and                      
+C+        FILE1.field4 = FILE2.field4)                
+C/end-exec                 
+=====================================================
+
+=====================================================
+
+
+

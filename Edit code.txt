@@ -1,0 +1,10 @@
+Eval      Amtdue = 3210.50
+Eval      TextField = %editc( amtdue : 'J')
+
+%TRIML(%editc( amtdue : 'J'))
+
+Use the %EditC BIF to convert character to numeric in V5R1:
+i.e. 
+Eval string = %EditC( Temp52 : 'Z')
+Yields "123.45" when Temp52 = 123.45
+Yields " " when Temp42 = 0

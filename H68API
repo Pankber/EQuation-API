@@ -1,0 +1,108 @@
+      ** Extract All Valid ATM Accounts
+     C                   READ      SCPFR                                  01
+     C     *IN01         DOWEQ     *OFF
+      *
+      ** Get Additional Information Details and Check the ATM Flag
+     C     KB0011        CHAIN     B0PFR                              02
+      *
+      ** Get Currency Decimal Places
+     C     SCCCY         CHAIN     C8PFR                              03
+      *
+      ** Continue if Additional Info record is found and the ATM Flag is 'Y' and
+      ** Currency Details found
+     C     *IN02         IFEQ      *OFF
+     C     B0ATMF        ANDEQ     'Y'
+     C     *IN03         ANDEQ     *OFF
+     C                   CLEAR                   DSATMB
+
+     C                   MOVEL     SCAB          HZAB
+     C                   MOVEL     SCAN          HZAN
+     C                   MOVEL     SCAS          HZAS
+     C                   MOVEL     DSH681        DSAIF
+     C                   MOVE      *BLANKS       @ERCOD
+     C                   MOVE      *BLANKS       @ERPRM
+     C                   Z-ADD     *ZEROS        @FLEN
+
+     C                   CALL      'H46HMR'
+     C                   PARM                    @EPGM            10
+     C                   PARM                    DSAIF          3000
+     C                   PARM                    DSAIR          3000            *
+     C                   PARM                    @BEGIN            1            *
+     C                   PARM                    @NOREQ            5 0          *
+     C                   PARM                    @NORET            5 0          *
+     C                   PARM                    @ENQLN            2            -blanks-
+     C                   PARM                    @ERCOD            2            O
+     C                   PARM                    @ERPRM           10            O
+     C                   PARM                    @FLEN             5 0          O
+     C                   PARM                    @RLEN             5 0          *
+
+     C     @ERCOD        IFEQ      *BLANKS
+     C                   MOVEL     DSAIF         DSH681
+
+     C                   MOVEL     DSACCT        ATACNO
+     C                   MOVEL     '590133'      ATBNKC
+
+     C                   MOVE      HZCABL        @WRK15           15 0
+     C                   EXSR      FMTAMT
+     C                   MOVEL     @WRK15        ATBALA
+
+     C                   MOVE      HZODL         @WRK15
+     C                   EXSR      FMTAMT
+     C                   MOVEL     @WRK15        ATFACI
+
+     C                   MOVE      HZRBA         @WRK15
+     C                   EXSR      FMTAMT
+     C                   MOVEL     @WRK15        ATBLKA
+
+     C                   Z-ADD     *ZEROS        @WRK15
+     C                   MOVEL     @WRK15        ATCCTA
+     C                   MOVEL     @WRK15        ATCCAA
+     C                   MOVEL     @WRK15        ATPTAM
+     C                   MOVEL     @WRK15        ATPTAA
+     C                   TIME                    @WRK14
+     C                   MOVE      @WRK14        MMDDYYYY
+     C                   MOVE      MM1           MM2
+     C                   MOVE      DD1           DD2
+     C                   MOVE      YY1           YY2
+     C                   MOVE      YYYYMMDD      ATLTCD
+     C                   MOVEL     @WRK15        ATLTCN
+     C                   MOVE      YYYYMMDD      ATLBCD
+     C                   MOVEL     @WRK14        ATLBCT
+     C                   MOVEL     @WRK15        ATLBCN
+     C                   MOVEL     SCCCY         ATACCY
+
+     C     SCCAD         IFEQ      *ZEROS
+     C                   MOVE      '0'           ATASTS
+     C                   ELSE
+     C                   MOVEL     '1'           ATASTS
+     C                   ENDIF
+
+      ** Calculate CheckSum
+     C                   Z-ADD     *ZEROS        X                 3 0
+     C                   Z-ADD     *ZEROS        @CHKSUM           8 0
+     C                   MOVEA     DSATMB        ARCHS
+     C     1             DO        181           X
+
+     C                   Z-ADD     1             Y                 3 0
+     C     ARCHS(X)      LOOKUP    ASCII(Y)                               80
+     C     *IN80         IFEQ      *ON
+     C                   ADD       VALUE(Y)      @CHKSUM
+     C                   ELSE
+     C                   ADD       *ZEROS        @CHKSUM
+     C                   ENDIF
+
+     C                   ENDDO
+     C                   DIV       1584          @CHKSUM
+     C                   MVR                     @CHKSUM
+     C                   MOVEL     @CHKSUM       ATCHKS
+
+     C                   WRITE     ATMBALF
+
+     C                   ADD       1             @CTR
+
+     C                   ENDIF
+
+     C                   ENDIF
+
+     C                   READ      SCPFR                                  01
+     C                   ENDDO

@@ -1,0 +1,227 @@
+********************************************************************************
+CTL-OPT 	for control specs (H)
+DCL-F 		for file specs (F)
+DCL-PROC 	for procedure specs (P)
+DCL-S, DCL-DS, DCL-SUBF, DCL-C, DCL-PR, DCL-PI, DCL-PARM for data specs (D)
+
+********************************************************************************
+FTESTPF    IF   E             DISK
+  dcl-f TESTPF disk usage(*input) ;
+
+FTESTPF    IF   E           K DISK    prefix(a_)   
+  dcl-f TESTPF usage(*input) keyed prefix(a_) ;
+
+FTESTPF    UF   E           K DISK    rename(TESTPFR:NEWNAME)
+   dcl-f TESTPF usage(*update) keyed                        
+                      rename(TESTPFR:NEWNAME) ; 
+
+FTESTPF    IF A E           K DISK
+       dcl-f TESTPF usage(*input:*output) keyed ; 
+
+FTESTPF    UF A E           K DISK
+       dcl-f TESTPF keyed usage(*update:*output) ;
+
+FTESTPF    UF A E           K DISK
+    dcl-f TESTPF keyed usage(*update:*output:*delete) ;
+
+FTESTPRTF  O    E             PRINTER
+       dcl-f TESTPRTF printer ;
+
+FTESTDSPF  CF   E             WORKSTN indds(IndDs)
+F                                       sfile(SFL01:Z1RRN)
+ dcl-f TESTDPSF workstn indds(IndDs) sfile(SFL01:Z1RRN) 
+
+********************************************************************************
+// Program described data structure 
+DCL-DS data_str_1; 
+    emp_name CHAR(10); 
+    first_name CHAR(10); 
+    salary PACKED(8:2); 
+END-DS; 
+
+// Program described data structure 
+DCL-DS data_str_2; 
+    value VARCHAR(4); 
+    index INT(10); 
+END-DS data_str_2; 
+
+//Unnamed data structure 
+DCL-DS *N; 
+    item VARCHAR(40); 
+END-DS;
+********************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D Alpha1          S             10A
+02   dcl-s Alpha1 char(10) ;
+
+03  D Alpha2          S                   like(Alpha1)
+    D                                       inz(*all'*')
+04   dcl-s Alpha2 like(Alpha1) inz(*all'*') ;
+
+01  D Packed1         S              7P 0
+02     dcl-s Packed1 packed(7) ;
+
+03  D Packed2         S              5  2
+04     dcl-s Packed2 packed(5:2) ;
+
+01  D Signed1         S              7S 2
+02     dcl-s Signed1 zoned(7:2) ;
+
+01  D Int1            S              3I 0
+02     dcl-s Int1 int(3) ;
+
+03  D Uns1            S              3U 0
+04     dcl-s Uns1 uns(3) ;
+
+05  D Float1          S              8F
+06     dcl-s Float1 float(8) ;
+
+01  D Date1           S               D   datfmt(*iso)
+02     dcl-s Date1 date(*iso) ;
+
+03  D Time1           S               T
+04     dcl-s Time1 time ;
+
+05  D TimeStamp1      S               Z
+06     dcl-s TimeStamp1 timestamp ;
+
+01  D Ind1            S               N
+02     dcl-s Ind1 ind ;
+
+01  D Bin1            S              5B 0
+02     dcl-s Bin1 bindec(5) ;
+
+01  D Pointer1        S               *
+02     dcl-s Pointer1 pointer ;
+
+01  D Array1          S              3    dim(100)
+02     dcl-s Array1 char(3) dim(100) ;
+
+01  D Table1          S              7    dim(3) ctdata
+02     dcl-s TabTable1 char(7) dim(3) ctdata ; 
+
+01  D TestDa1         S             10    dtaara('TESTDA')
+02     dcl-s TestDa1 char(10) dtaara('TESTDA') ;
+
+
+************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D                 DS
+02  D   Telephone1                  12A
+03  D   AreaCode1                    3A   overlay(Telephone1:2)
+
+04     dcl-ds *N ;
+05        dcl-subf Telephone1 char(12) ;
+06        dcl-subf AreaCode1 char(3) overlay(Telephone1:2) ;
+07     end-ds ;
+
+08     dcl-ds *N ;
+09       Telephone2 char(12) ;
+10       AreaCode2 char(3) overlay(Telephone2:2) ;
+11     end-ds ;
+************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D                 DS             
+02  D  Telephone1             1    12
+03  D  AreaCode1              2     4     
+                                 
+04     dcl-ds *N ;                   
+05        Telephone2 char(12) pos(1) ;
+06       AreaCode2 char(3) pos(2) ;  
+07     end-ds ;
+************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D PgmDs         ESDS                  extname(RPG4DS) qualified
+
+02     dcl-ds PgmDs
+03        extname('RPG4DS') psds qualified
+04     end-ds ;
+************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D PgmDs          SDS                  qualified
+02  D PgmName           *proc
+03  D Status            *status
+
+04     dcl-ds PgmDs psds qualified ;
+05        PgmName *proc ;
+06        Status *status ;
+07     end-ds ;
+************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D IndDs           DS                  qualified
+02  D   Exit                  3      3N
+03  D   Errors               50     59A
+04  D   ErrControlGroupNotFound...
+05  D                        50     50N
+06  D   ErrStrRangeGreaterThanEndRange...
+07  D                        51     51N
+************************************************************************
+01  dcl-f TESTFILE ;
+02  dcl-f TESTLF usage(*output)
+                   rename(TESTFILER:TESTLFR) ;
+
+03  dou %eof(TESTFILE) ;
+04    read TESTFILER ;
+05    write(e) TESTLFR ;
+06  enddo ;
+
+07  *inlr = *on ;
+
+08     dcl-ds IndDs qualified ;
+09        Exit ind pos(3) ;
+10        Errors char(10) pos(50) ;
+11        ErrControlGroupNotFound ind pos(50) ;
+12        ErrStrRangeGreaterThanEndRange ind pos(51) ;
+13      end-ds ;
+************************************************************************
+    DName+++++++++++ETDsFrom+++To/L+++IDc.Keywords
+01  D Constant1       C                   const('ABCDEFG')
+02  D Constant2       C                   'ABCDEFG'
+
+03     dcl-c Constant1 const('ABCDEFG') ;
+04     dcl-c Constant2 'ABCDEFG' ;
+************************************************************************
+ // Control Specifications
+   CTL-OPT DATFMT(*USA) COPYRIGHT('LINOMA SOFTWARE');
+
+ // File Specifications
+   DCL-F CDLCM1 DISK(*EXT) USAGE(*INPUT : *OUTPUT)
+         KEYED RENAME(CDRCM:CDRCM2);
+
+ // Data Structure
+   DCL-DS PhoneDS;
+     AreaCode CHAR(3);
+     Prefix CHAR(3);
+     Last4 CHAR(4);
+   END-DS;
+
+ // Stand-alone fields
+   DCL-S TotalTax PACKED(9 : 2);
+   DCL-S INVTOTAL PACKED(7 : 2);
+   DCL-S CRLIMIT LIKE(CMCRLM);
+   DCL-S REMAIN PACKED(9 : 2);
+ // Prototype for PROCESS
+   DCL-PR PROCESS;
+   END-PR;
+
+ // Chain to Customer file
+   CMIDNO = '000001';
+   CHAIN CMIDNO CDLCM1;
+   *IN99 = NOT %FOUND;
+ // Found-> Process credit limit
+   IF *IN99 = *ON;
+       CRLIMIT = CMCRLM;
+       PROCESS();
+   ENDIF;
+ // Return to caller
+   *INLR = *ON;
+   RETURN;
+ // Process credit limit
+   DCL-PROC PROCESS ;
+     IF CRLIMIT > 10000;
+       *IN61 = *ON;
+       %SUBST(CMNAME:1:11) = 'ABC COMPANY';
+       REMAIN = CRLIMIT - INVTOTAL;
+     ENDIF;
+   END-PROC PROCESS;
+************************************************************************s

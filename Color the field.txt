@@ -1,0 +1,74 @@
+Just add a hex constant where you want color.
+This works for any displayable field. Here's a set of color constants I use:
+
+ *** COLORS ***
+D White           C                   CONST( X'22'                        )
+D White_UL        C                   CONST( X'26'                        )
+D White_RI        C                   CONST( X'23'                        )
+D White_RI_CS     C                   CONST( X'33'                        )
+
+D PR_White        C                   CONST( X'A2'                        )
+D PR_White_UL     C                   CONST( X'A6'                        )
+D PR_White_RI     C                   CONST( X'A3'                        )
+D PR_White_RI_CS  C                   CONST( X'B3'                        )
+
+D Green           C                   CONST( X'20'                        )
+D Green_RI        C                   CONST( X'21'                        )
+D Green_UL        C                   CONST( X'24'                        )
+D Green_UL_RI     C                   CONST( X'25'                        )
+
+D PR_Green        C                   CONST( X'A0'                        )
+D PR_Green_RI     C                   CONST( X'A1'                        )
+D PR_Green_UL     C                   CONST( X'A4'                        )
+D PR_Green_UL_RI  C                   CONST( X'A5'                        )
+
+D Red             C                   CONST( X'28'                        )
+D Red_RI          C                   CONST( X'29'                        )
+D Red_HI          C                   CONST( X'2A'                        )
+D Red_HI_RI       C                   CONST( X'2B'                        )
+D Red_UL          C                   CONST( X'2C'                        )
+D Red_UL_RI       C                   CONST( X'2D'                        )
+D Red_UL_BL       C                   CONST( X'2E'                        )
+
+D PR_Red          C                   CONST( X'A8'                        )
+D PR_Red_RI       C                   CONST( X'A9'                        )
+D PR_Red_HI       C                   CONST( X'AA'                        )
+D PR_Red_HI_RI    C                   CONST( X'AB'                        )
+D PR_Red_UL       C                   CONST( X'AC'                        )
+D PR_Red_UL_RI    C                   CONST( X'AD'                        )
+D PR_Red_UL_BL    C                   CONST( X'AE'                        )
+
+D Turq_CS         C                   CONST( X'30'                        )
+D Turq_CS_RI      C                   CONST( X'31'                        )
+D Turq_UL_CS      C                   CONST( X'34'                        )
+D Turq_UL_RI_CS   C                   CONST( X'35'                        )
+
+D PR_Turq_CS      C                   CONST( X'B0'                        )
+D PR_Turq_CS_RI   C                   CONST( X'B1'                        )
+D PR_Turq_CS_UL   C                   CONST( X'B4'                        )
+D PR_Turq_CSULRI  C                   CONST( X'B5'                        )
+
+D Yellow_CS       C                   CONST( X'32'                        )
+D Yellow_CS_UL    C                   CONST( X'36'                        )
+
+D PR_Yellow_CS    C                   CONST( X'B2'                        )
+D PR_Yellow_CSUL  C                   CONST( X'B6'                        )
+
+D Pink            C                   CONST( X'38'                        )
+D Pink_RI         C                   CONST( X'39'                        )
+D Pink_UL         C                   CONST( X'3C'                        )
+D Pink_UL_RI      C                   CONST( X'3D'                        )
+
+D PR_Pink         C                   CONST( X'B8'                        )
+D PR_Pink_RI      C                   CONST( X'B9'                        )
+D PR_Pink_UL      C                   CONST( X'BC'                        )
+D PR_Pink_UL_RI   C                   CONST( X'BD'                        )
+
+D Blue            C                   CONST( X'3A'                        )
+D Blue_RI         C                   CONST( X'3B'                        )
+D Blue_UL         C                   CONST( X'3E'                        )
+
+D PR_Blue         C                   CONST( X'BA'                        )
+D PR_Blue_RI      C                   CONST( X'BB'                        )
+D PR_Blue_UL      C                   CONST( X'BE'                        )
+

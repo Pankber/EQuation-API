@@ -1,0 +1,221 @@
+     ‚*Z This program has been tokenised on 100105                                            SSA01X
+      /TITLE SSA01XX- Post an amount user exit                                                SSA01X
+     ‚*     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++                         SSA01X
+     ‚*     +                                                       +                         SSA01X
+     ‚*     +  Copyright and all other intellectual property rights +                         SSA01X
+     ‚*     +  in this software, in any form, is vested in          +                         SSA01X
+     ‚*     +  Misys International Banking Systems Ltd ("Misys") or +                         SSA01X
+     ‚*     +  a related company.                                   +                         SSA01X
+     ‚*     +                                                       +                         SSA01X
+     ‚*     +  This software may not be copied, amended, compiled,  +                         SSA01X
+     ‚*     +  translated, or developed; or sold, leased, hired,    +                         SSA01X
+     ‚*     +  rented, or disclosed to any third party without the  +                         SSA01X
+     ‚*     +  prior written consent of Misys.                      +                         SSA01X
+     ‚*     +                                                       +                         SSA01X
+     ‚*     +  Copyright  © Misys International Banking Systems     +                         SSA01X
+     ‚*     +  Ltd, 1975 and later                                  +                         SSA01X
+     ‚*     +                                                       +                         SSA01X
+     ‚*     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++                         SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*              System Name - EQUATION                                                   SSA01X
+     ‚*              Module Name - Post an amount user exit                                   SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*             Program Name - SSA01XX                                                    SSA01X
+     ‚*            Program Title - Post an amount user exit                                   SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*L                   Level - FX016                                                      SSA01X
+     ‚*                  Release - FX016                                                      SSA01X
+     ‚*              Application - EQ38                                                       SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*            Creation Date - 11DEC02                                                    SSA01X
+     ‚*      Last Amendment Date - 18NOV04                                                    SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*P Purpose                                                                              SSA01X
+     ‚*P ~~~~~~~                                                                              SSA01X
+     ‚*P This program will call all the generic user exit programs                            SSA01X
+     ‚*P defined under the calling program.                                                   SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*H Change Control                                                                       SSA01X
+     ‚*H ~~~~~~~~~~~~~~                                                                       SSA01X
+     ‚*H Project     Programmer    Date         Level                                         SSA01X
+     ‚*H ~~~~~~~     ~~~~~~~~~~    ~~~~         ~~~~~                                         SSA01X
+     ‚*H QNB025         RRU        11DEC02       E5B                                          SSA01X
+     ‚*H  * Create                                                                            SSA01X
+     ‚*H                                                                                      SSA01X
+     ‚*H                                                                                      SSA01X
+     ‚*H P1301B/CC582NKN           29JUN04      ECB                                           SSA01X
+     ‚*H  Converted to CC/ILE                                                                 SSA01X
+     ‚*H                                                                                      SSA01X
+     ‚*H CX001/P1301    GPT/FLS    18NOV04                                                    SSA01X
+     ‚*H  Aldon/CMS Implementation                                                            SSA01X
+     ‚*H                                                                                      SSA01X
+     ‚*-------------------------------------------------------------------------
+     ‚*F Files Used
+     ‚*F ~~~~~~~~~~
+     ‚*F Name       Description
+     ‚*F ~~~~       ~~~~~~~~~~~
+     ‚*F ZO20LF     Object not found                                ------>
+     ‚*-------------------------------------------------------------------------
+     ‚*Y Copysource Used
+     ‚*Y ~~~~~~~~~~~~~~~
+     ‚*Y File       Member     Description
+     ‚*Y ~~~~       ~~~~~~     ~~~~~~~~~~~
+     ‚*Y EQCPYLESRC HSPEC      Program header specification               EQFILES
+     ‚*Y EQCPYLESRC DPGMDS     Data structure for program status          EQFILES
+     ‚*Y EQCPYLESRC DMSGDS_A   DS for dump message                        EQFILES
+     ‚*Y EQCPYLESRC DSEPMS     Data structure for message componants      EQFILES
+     ‚*Y EQCPYLESRC STDCNST    Standard program constants                 EQFILES
+     ‚*Y EQCPYLESRC STDFLDS    Standard program fields                 IL EQFILES
+     ‚*Y EQCPYLESRC CMRINZS    SRVCMR - PgmINZSR Prototype             IL EQFILES
+     ‚*Y EQCPYLESRC CMRMAIN    SRVCMR - PgmMain Prototype              IL EQFILES
+     ‚*Y EQCPYLESRC CMREND     SRVCMR - PgmEndTran Prototype           IL EQFILES
+     ‚*Y EQCPYLESRC CMRABRT    SRVCMR - PgmAbortTran Prototype         IL EQFILES
+     ‚*Y EQCPYLESRC CMRPSSR    SRVCMR - PgmPSSR Prototype              IL EQFILES
+     ‚*Y EQCPYLESRC MAIN       Logic at beginning of C Spec mainline   IL EQFILES
+     ‚*Y EQCPYLESRC INZSR      *INZSR subroutine for program initializeIL EQFILES
+     ‚*Y EQCPYLESRC PSSR_B     Program error control sub (on-line)     IL EQFILES
+      *-------------------------------------------------------------------------S
+      /EJECT                                                                                  SSA01X
+      /COPY EQCPYLESRC,HSPEC                     Program header specification               EQSSA01X
+     ‚*                                                                                       SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  FILES                                                                                SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*  ZO20LF - Generic user exits file                                                     SSA01X
+     FZO20LF    IF   E           K DISK    INFSR(*PSSR)                                       SSA01X
+     F                                     COMMIT(#CCSts)                                     SSA01X
+     F                                     USROPN                                             SSA01X
+     ‚*                                                                                       SSA01X
+      /EJECT                                                                                  SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  ARRAYS                                                                               SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*  Compile time arrays                                                                  SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  DATA AREAS                                                                           SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  DATA STRUCTURES                                                                      SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X
+      /COPY EQCPYLESRC,DPGMDS                    Data structure for program status          EQSSA01X
+      /COPY EQCPYLESRC,DMSGDS_A                  DS for dump message                        EQSSA01X
+      /COPY EQCPYLESRC,DSEPMS                    Data structure for message componants      EQSSA01X
+     ‚*                                                                                       SSA01X
+     D DSRET1          DS           512                                                       SSA01X
+     D DSSAPF        E DS                  EXTNAME(SAPF)                                      SSA01X
+     D DSSCPF        E DS                  EXTNAME(SCPF)                                      SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  PRE-INITIALISED DATA STRUCTURES                                                      SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*  KAPROG data structure                                                                SSA01X
+     D KAPROG          DS                                                                     SSA01X
+     D  MISYS                  1      6    INZ('MISYS ')                                      SSA01X
+     D  KAPLVL                 8     14    INZ('FX016  ')                                     SSA01X
+     D  KAPPGM                16     21                                                       SSA01X
+     D  KAPPG7                16     22                                                       SSA01X
+     D KAPRG1          DS                                                                     SSA01X
+     D  KAPREL                 1      7    INZ('FX016')                                       SSA01X
+     D  KAPAPP                 8     13    INZ('EQ38')                                        SSA01X
+     D  KAPPRJ                14     20    INZ('FX016')                                       SSA01X
+     ‚*                                                                                       SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  NAMED CONSTANTS                                                                      SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X
+      /COPY EQCPYLESRC,STDCNST                   Standard program constants                 EQSSA01X
+      /COPY EQCPYLESRC,STDFLDS                   Standard program fields                 IL EQSSA01X
+      /COPY EQCPYLESRC,CMRINZS                   SRVCMR - PgmINZSR Prototype             IL EQSSA01X
+      /COPY EQCPYLESRC,CMRMAIN                   SRVCMR - PgmMain Prototype              IL EQSSA01X
+      /COPY EQCPYLESRC,CMREND                    SRVCMR - PgmEndTran Prototype           IL EQSSA01X
+      /COPY EQCPYLESRC,CMRABRT                   SRVCMR - PgmAbortTran Prototype         IL EQSSA01X
+      /COPY EQCPYLESRC,CMRPSSR                   SRVCMR - PgmPSSR Prototype              IL EQSSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  C SPEC START                                                                         SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     C     CSpecStart    TAG                                                                  MAIN
+      /COPY EQCPYLESRC,MAIN                      Logic at beginning of C Spec mainline   IL EQMAIN
+     ‚*                                                                                       MAIN
+     ‚*---------------------------------------------------------------------------------------MAIN
+     ‚*  PARAMETER AND KEY LISTS                                                              MAIN
+     ‚*---------------------------------------------------------------------------------------MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Parameter lists                                                                      MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Entry parameter list                                                                 MAIN
+     C     *ENTRY        PLIST                                                                MAIN
+     C                   PARM                    @PTYP             1                          MAIN
+     C                   PARM                    DSRET1                                       MAIN
+     C                   PARM                    DSSAPF                                       MAIN
+     C                   PARM                    DSSCPF                                       MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Parameter list for the generic user exit driver program                              MAIN
+     C     RETPRM        PLIST                                                                MAIN
+     C                   PARM                    @PTYP                                        MAIN
+     C                   PARM                    DSRET1                                       MAIN
+     C                   PARM                    DSSAPF                         -After Image  MAIN
+     C                   PARM                    DSSCPF                         -A/C Details  MAIN
+     C                   PARM                    @UEP              8            -User exit pgmMAIN
+     ‚*                                                                                       MAIN
+     ‚*  Key lists                                                                            MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Klist for generic user exit program file                                             MAIN
+     C     KZO201        KLIST                                                                MAIN
+     C                   KFLD                    @UEP                                         MAIN
+     ‚*                                                                                       MAIN
+      /EJECT                                                                                  MAIN
+     ‚*=======================================================================================MAIN
+     ‚*  MAINLINE                                                                             MAIN
+     ‚*=======================================================================================MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Initial processing                                                                   MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Detail processing                                                                    MAIN
+     C     KZO201        SETLL     ZOPFR                                                      MAIN
+     C     KZO201        READE     ZOPFR                                  90    NoRcd         MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Read all records equal to the the calling user exit program                          MAIN
+B001 C     *IN90         DOWEQ     *OFF                                                       MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Call the generic user exit program defined in the file                               MAIN
+ 001 C                   CALL      ZOUSR         RETPRM                                       MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Read next record                                                                     MAIN
+B002 C     @ERM          IFEQ      *BLANKS                                                    MAIN
+ 002 C     KZO201        READE     ZOPFR                                  90    NoRcd         MAIN
+E002 C                   ENDIF                                                  @ERM EQ *BLANKMAIN
+     ‚*                                                                                       MAIN
+E001 C                   ENDDO                                                  *IN90 EQ *OFF MAIN
+     ‚*                                                                                       MAIN
+     ‚*  Termination                                                                          MAIN
+     C                   RETURN                                                               MAIN
+      /EJECT                                                                                  MAIN
+     ‚*---------------------------------------------------------------------------------------MAIN
+     C     *INZSR        BEGSR                                                                *INZSR
+      /COPY EQCPYLESRC,INZSR                     *INZSR subroutine for program initializeIL EQ*INZSR
+     C                   OPEN      ZO20LF                                                     *INZSR
+     ‚*---------------------------------------------------------------------------------------*INZSR
+     ‚*                                                                                       *INZSR
+     ‚*S Program initialisation                                                               *INZSR
+     ‚*                                                                                       *INZSR
+     ‚*---------------------------------------------------------------------------------------*INZSR
+     ‚*                                                                                       *INZSR
+     ‚*  Set up KAPROG program name                                                           *INZSR
+     C                   MOVEL     @PGMID        KAPPG7                                       *INZSR
+     ‚*                                                                                       *INZSR
+     C                   MOVEL     'SSA01XX '    @UEP              8                          *INZSR
+     ‚*                                                                                       *INZSR
+     C                   ENDSR                                                                *INZSR
+      /COPY EQCPYLESRC,PSSR_B                    Program error control sub (on-line)     IL EQSSA01X
+     ‚*                                                                                       SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*  COMPILE TIME ARRAY DATA                                                              SSA01X
+     ‚*---------------------------------------------------------------------------------------SSA01X
+     ‚*                                                                                       SSA01X

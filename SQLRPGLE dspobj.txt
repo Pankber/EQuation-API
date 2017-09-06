@@ -1,0 +1,90 @@
+Free Format SQLRPGLE Shell Program: part 2 
+Author: Lionel Halvorsen
+Feb 26, 2010
+
+Now to use the shell from part one, this program will create an objects report like this;
+
+Library    Object     Type     Attribute  Description
+QGPL       CR400AP    *FILE    PF         CR Batch Header
+QGPL       CR410AP    *FILE    PF         CR Payment Header
+QGPL       CR420AP    *FILE    PF         CR Payment Detail
+QGPL       GMCKFILE   *FILE    PF         GM CHECK FILE
+QGPL       GM170AP    *FILE    PF         GMBA Outstanding Chks
+QGPL       PR510AP    *FILE    PF         PR Employee ABT
+QGPL       PR520AP    *FILE    PF         PR Employee Deduct
+QGPL       PR525AP    *FILE    PF         PR Employee Benefits
+
+I created an input file using the DSPOBJD command.
+
+DSPOBJD OBJ(TESTLIB/*ALL) OBJTYPE(*ALL) OUTPUT(*OUTFILE)
+    OUTFILE(qgpl/dspobjd)
+
+This produces my input file qgpl/dspobjd which has one record for each object in library TESTLIB.
+
+Here is the code for the program. 
+
+fqsysprt   o    f  132        printer oflind(OverFlow)
+ *                                                 
+d filestr         ds                               
+d  odlbnm                       10a                
+d  odobnm                       10a                
+d  odobtp                        8a                
+d  odobat                       10a                
+d  odobtx                       50a                
+ *                                                 
+ /free                                             
+    // write column headers                        
+    exsr setup;                                    
+                                                   
+    // loop through file                           
+    exec sql                                       
+     declare C1 cursor for                         
+     SELECT odlbnm,odobnm,odobtp,odobat,odobtx
+       FROM qgpl/dspobjd                      
+       WHERE odobat='PF'                      
+       ORDER BY odobnm                        
+     for fetch only;                          
+                                              
+    exec sql OPEN C1;                         
+    dow sqlcod=0;                             
+       exec sql FETCH C1 INTO:filestr;        
+       if sqlcod=0;                           
+          exsr movdet;                        
+       endif;                                 
+    enddo;                                    
+    exec sql CLOSE C1;                        
+    *inlr=*on;                                
+    return;                                   
+                                              
+    begsr movdet;                             
+       exsr OverFlowSR; 
+       except det1;                           
+    endsr;                                    
+                                                            
+    begsr setup;                                            
+       except head1;                                        
+    endsr;                                                  
+                                                            
+    begsr OverFlowSR;                                         
+       if OverFlow; 
+          except head1;                                     
+       endif;                                               
+    endsr;                                                  
+ /end-free                                                  
+oqsysprt   e            head1       2  1                    
+o                                           10 'Library   ' 
+o                                           21 'Object    ' 
+o                                           30 'Type    '   
+o                                           41 'Attribute ' 
+o                                           52 'Description'
+o          e            det1           1                    
+o                       odlbnm              10               
+o                       odobnm              21              
+o                       odobtp              30 
+o                       odobat              41 
+o                       odobtx              92 
+
+I created a source member of type 'SQLRPGLE' and compiled it with the following command:
+
+
+CRTSQLRPG OBJ(HTSUSR/FB0765S) SRCFILE(HTSUSR/QRPGLESRDC) SRCMBR(FB0765S)
